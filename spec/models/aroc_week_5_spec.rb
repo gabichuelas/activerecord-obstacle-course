@@ -20,20 +20,22 @@ describe 'ActiveRecord Obstacle Course, Week 5' do
     expected_result = ['Abercrombie', 'Banana Republic', 'Calvin Klein', 'Dickies', 'Eddie Bauer', 'Fox', 'Giorgio Armani', 'Izod', 'J.crew']
 
     # ----------------------- Using Ruby -------------------------
-    items = Item.all
-
-    ordered_items = items.map do |item|
-      item if item.orders.present?
-    end.compact
-
-    ordered_items_names = ordered_items.map(&:name)
-    ordered_items_names.sort
+    # items = Item.all
+    #
+    # ordered_items = items.map do |item|
+    #   item if item.orders.present?
+    # end.compact
+    #
+    # ordered_items_names = ordered_items.map(&:name)
+    # ordered_items_names.sort
     # ------------------------------------------------------------
 
     # ------------------ ActiveRecord Solution ----------------------
     # Solution goes here
     # When you find a solution, experiment with adjusting your method chaining
     # Which ones are you able to switch around without relying on Ruby's Enumerable methods?
+    ordered_items_names = Item.joins(:orders).distinct.order(:name).pluck(:name)
+
     # ---------------------------------------------------------------
 
     # Expectations
@@ -42,7 +44,7 @@ describe 'ActiveRecord Obstacle Course, Week 5' do
   end
 
   xit '27. returns a table of information for all users orders' do
-    custom_results = [@user_3, @user_1, @user_2]
+    # custom_results = [@user_3, @user_1, @user_2]
 
     # using a single ActiveRecord call, fetch a joined object that mimics the
     # following table of information:
@@ -53,7 +55,8 @@ describe 'ActiveRecord Obstacle Course, Week 5' do
     # Zoolander      |         6
 
     # ------------------ ActiveRecord Solution ----------------------
-    custom_results = []
+    # require "pry"; binding.pry
+    custom_results = User.group(:name).joins(:orders).select("users.name, count(orders.*)")
     # ---------------------------------------------------------------
 
     expect(custom_results[0].name).to eq(@user_3.name)
